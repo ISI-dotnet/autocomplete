@@ -17,7 +17,7 @@ class AutocompleteTextbox:
     def autocomplete(self, event):
         current_text = self.entry.get()
         words_list = current_text.split()  # Split input into individual words
-        if len(words_list) > 1:
+        if len(words_list) >= 1:
             # Get the last word for autocompletion
             last_word_to_complete = words_list[-1]
             suggestions = self.get_word_suggestions(last_word_to_complete)
