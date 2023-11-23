@@ -10,12 +10,13 @@ class AutocompleteTextbox:
         self.root = root
         # Using NLTK's words corpus as the word list
         self.words = set(words.words())
-        self.entry = tk.Entry(root)
-        self.entry.pack()
-        self.entry.bind("<Tab>", self.autocomplete)
+        self.text = tk.Text(root, wrap='word', height=30,
+                            width=160, font=("Arial", 12))  # Setting height and width
+        self.text.pack()
+        self.text.bind("<Tab>", self.autocomplete)
 
     def autocomplete(self, event):
-        current_text = self.entry.get()
+        current_text = self.text.get("1.0", tk.END)[:-1]  # Get text content
         words_list = current_text.split()  # Split input into individual words
         if len(words_list) >= 1:
             # Get the last word for autocompletion
@@ -24,8 +25,8 @@ class AutocompleteTextbox:
             if suggestions:
                 suggested_word = suggestions[0]  # Use the first suggestion
                 completed_text = " ".join(words_list[:-1] + [suggested_word])
-                self.entry.delete(0, tk.END)
-                self.entry.insert(tk.END, completed_text)
+                self.text.delete("1.0", tk.END)  # Clear existing text
+                self.text.insert(tk.END, completed_text)
             else:
                 messagebox.showinfo("Autocomplete", "No suggestion available")
             return 'break'
