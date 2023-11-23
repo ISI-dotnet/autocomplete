@@ -1,5 +1,4 @@
 import tkinter as tk
-from tkinter import messagebox
 from nltk.corpus import words
 import nltk
 nltk.download("words")
@@ -17,47 +16,41 @@ class AutocompleteTextbox:
 
         self.suggestion_listbox = tk.Listbox(root, width=160, height=3, font=("Arial", 12))
         self.suggestion_listbox.pack()
-        self.suggestion_listbox.bind("<Double-Button-1>", self.on_select)
-        self.suggestion_listbox.bind("<Return>", self.apply_suggestion)
 
     def autocomplete(self, event):
-        current_text = self.text_area.get("1.0", tk.END)[:-1]  # Get text content
-        words_list = current_text.split()  # Split input into individual words
+        current_text = self.text_area.get("1.0", tk.END)[:-1]
+        words_list = current_text.split()
         if len(words_list) >= 1:
             last_word_to_complete = words_list[-1]
-            suggestions = self.get_word_suggestions(last_word_to_complete)[:3]  # Limit to 3 suggestions
-            self.update_suggestions(suggestions)
+            suggestions = self.get_word_suggestions(last_word_to_complete)[:3]
+            if current_text[-1] == " ":
+                self.update_suggestions([])
+            else:
+                self.update_suggestions(suggestions)
 
     def get_word_suggestions(self, current_text):
         return [word for word in self.words if word.startswith(current_text.lower())]
 
     def update_suggestions(self, suggestions):
         self.suggestion_listbox.delete(0, tk.END)
+        current_text = self.text_area.get("1.0", tk.END)[:-1]
+        words_list = current_text.split()
         for suggestion in suggestions:
+            if len(words_list) == 1:
+                suggestion = suggestion.capitalize()
             self.suggestion_listbox.insert(tk.END, suggestion)
 
     def apply_suggestion(self, event):
         selected_word = self.suggestion_listbox.get(0)
         if selected_word:
-            current_text = self.text_area.get("1.0", tk.END)[:-1]  # Get text content
+            current_text = self.text_area.get("1.0", tk.END)[:-1]
             words_list = current_text.split()
             if len(words_list) >= 1:
                 last_word_index = current_text.rfind(words_list[-1])
-                updated_text = current_text[:last_word_index] + selected_word
-                self.text_area.delete("1.0", tk.END)  # Clear existing text
+                updated_text = current_text[:last_word_index] + selected_word + " "
+                self.text_area.delete("1.0", tk.END)
                 self.text_area.insert(tk.END, updated_text)
-                return 'break'  # Prevent default behavior
-
-    def on_select(self, event):
-        selected_word = self.suggestion_listbox.get(0)
-        if selected_word:
-            current_text = self.text_area.get("1.0", tk.END)[:-1]  # Get text content
-            words_list = current_text.split()
-            if len(words_list) >= 1:
-                last_word_index = current_text.rfind(words_list[-1])
-                updated_text = current_text[:last_word_index] + selected_word
-                self.text_area.delete("1.0", tk.END)  # Clear existing text
-                self.text_area.insert(tk.END, updated_text)
+                return 'break'
 
 def main():
     root = tk.Tk()
