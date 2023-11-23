@@ -24,6 +24,9 @@ class AutocompleteTextbox:
             suggestions = self.get_word_suggestions(last_word_to_complete)
             if suggestions:
                 suggested_word = suggestions[0]  # Use the first suggestion
+                # Check if the original word starts with a capital letter
+                if last_word_to_complete and last_word_to_complete[0].isupper():
+                    suggested_word = suggested_word.capitalize()  # Capitalize the suggested word
                 completed_text = " ".join(words_list[:-1] + [suggested_word])
                 self.text.delete("1.0", tk.END)  # Clear existing text
                 self.text.insert(tk.END, completed_text)
