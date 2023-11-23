@@ -1,10 +1,8 @@
-
-
-from nltk.corpus import words
 import tkinter as tk
 from tkinter import messagebox
+from nltk.corpus import words
 import nltk
-nltk.download('words')
+nltk.download("words")
 
 
 class AutocompleteTextbox:
@@ -12,26 +10,27 @@ class AutocompleteTextbox:
         self.root = root
         # Using NLTK's words corpus as the word list
         self.words = set(words.words())
-
         self.entry = tk.Entry(root)
         self.entry.pack()
         self.entry.bind("<Tab>", self.autocomplete)
 
     def autocomplete(self, event):
         current_text = self.entry.get()
-        word_to_complete = self.get_word_to_complete(current_text)
+        words_list = current_text.split()  # Split input into individual words
+        if len(words_list) > 1:
+            # Get the last word for autocompletion
+            last_word_to_complete = words_list[-1]
+            suggestions = self.get_word_suggestions(last_word_to_complete)
+            if suggestions:
+                suggested_word = suggestions[0]  # Use the first suggestion
+                completed_text = " ".join(words_list[:-1] + [suggested_word])
+                self.entry.delete(0, tk.END)
+                self.entry.insert(tk.END, completed_text)
+            else:
+                messagebox.showinfo("Autocomplete", "No suggestion available")
 
-        if word_to_complete:
-            self.entry.delete(0, tk.END)
-            self.entry.insert(tk.END, word_to_complete)
-        else:
-            messagebox.showinfo("Autocomplete", "No suggestion available")
-
-    def get_word_to_complete(self, current_text):
-        for word in self.words:
-            if word.startswith(current_text):
-                return word
-        return None
+    def get_word_suggestions(self, current_text):
+        return [word for word in self.words if word.startswith(current_text.lower())]
 
 
 def main():
