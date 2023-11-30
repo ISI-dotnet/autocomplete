@@ -1,13 +1,14 @@
 import tkinter as tk
 from nltk.corpus import words
+from nltk.probability import FreqDist
 import nltk
 nltk.download("words")
-
 
 class AutocompleteTextbox:
     def __init__(self, root):
         self.root = root
         self.words = set(words.words())
+        self.word_freq = FreqDist(words.words())
         
         self.text_area = tk.Text(root, wrap='word', height=30, width=160, font=("Arial", 12))
         self.text_area.pack()
@@ -29,7 +30,9 @@ class AutocompleteTextbox:
                 self.update_suggestions(suggestions)
 
     def get_word_suggestions(self, current_text):
-        return [word for word in self.words if word.startswith(current_text.lower())]
+        suggestions = [word for word in self.words if word.startswith(current_text.lower())]
+        suggestions.sort(key=lambda word: -self.word_freq[word])
+        return suggestions
 
     def update_suggestions(self, suggestions):
         self.suggestion_listbox.delete(0, tk.END)
