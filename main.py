@@ -18,6 +18,9 @@ class AutocompleteTextbox:
         self.suggestion_listbox = tk.Listbox(root, width=160, height=3, font=("Arial", 12))
         self.suggestion_listbox.pack()
 
+        # Bind Double-Click event to apply suggestion
+        self.suggestion_listbox.bind("<Double-Button-1>", self.apply_selected_suggestion)
+
     def autocomplete(self, event):
         current_text = self.text_area.get("1.0", tk.END)[:-1]
         words_list = current_text.split()
@@ -44,16 +47,26 @@ class AutocompleteTextbox:
             self.suggestion_listbox.insert(tk.END, suggestion)
 
     def apply_suggestion(self, event):
-        selected_word = self.suggestion_listbox.get(0)
+        selected_word = self.suggestion_listbox.get(tk.ACTIVE)
+        if selected_word:
+            self.apply_selected_suggestion()
+
+    def apply_selected_suggestion(self, event=None):
+        selected_word = self.suggestion_listbox.get(tk.ACTIVE)
         if selected_word:
             current_text = self.text_area.get("1.0", tk.END)[:-1]
             words_list = current_text.split()
             if len(words_list) >= 1:
                 last_word_index = current_text.rfind(words_list[-1])
-                updated_text = current_text[:last_word_index] + selected_word + " "
+                if current_text[-1] != " ":
+                    updated_text = current_text[:last_word_index] + " " + selected_word + " "
+                else:
+                    updated_text = current_text[:last_word_index] + selected_word + " "
                 self.text_area.delete("1.0", tk.END)
                 self.text_area.insert(tk.END, updated_text)
-                return 'break'
+
+            # Hide the suggestion listbox after applying the suggestion
+            self.suggestion_listbox.delete(0, tk.END)
 
 def main():
     root = tk.Tk()
