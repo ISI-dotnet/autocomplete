@@ -65,12 +65,13 @@ class AutocompleteTextbox:
         if selected_word:
             current_text = self.text_area.get("1.0", tk.END)[:-1]
             words_list = current_text.split()
-            if len(words_list) >= 1:
+            if len(words_list) > 1:
                 last_word_index = current_text.rfind(words_list[-1])
-                if current_text[-1] != " ":
-                    updated_text = current_text[:last_word_index] + selected_word + " "
-                else:
-                    updated_text = current_text[:last_word_index] + selected_word + " "
+                updated_text = current_text[:last_word_index] + selected_word + " "
+                self.text_area.delete("1.0", tk.END)
+                self.text_area.insert(tk.END, updated_text)
+            else:
+                updated_text = selected_word.capitalize() + " "
                 self.text_area.delete("1.0", tk.END)
                 self.text_area.insert(tk.END, updated_text)
 
