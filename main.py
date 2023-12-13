@@ -25,6 +25,9 @@ class AutocompleteTextbox:
 
         self.threshold = 60  # Fuzzy match threshold
 
+        # Bind Double-Click event to apply suggestion
+        self.suggestion_listbox.bind("<Double-Button-1>", self.apply_selected_suggestion)
+
     def autocomplete(self, event):
         current_text = self.text_area.get("1.0", tk.END)[:-1]
         words_list = current_text.split()
@@ -54,16 +57,20 @@ class AutocompleteTextbox:
     def apply_suggestion(self, event):
         selected_word = self.suggestion_listbox.get(tk.ACTIVE)
         if selected_word:
+            self.apply_selected_suggestion()
+            return "break" 
+
+    def apply_selected_suggestion(self, event=None):
+        selected_word = self.suggestion_listbox.get(tk.ACTIVE)
+        if selected_word:
             current_text = self.text_area.get("1.0", tk.END)[:-1]
             words_list = current_text.split()
             if len(words_list) >= 1:
                 last_word_index = current_text.rfind(words_list[-1])
                 if current_text[-1] != " ":
-                    updated_text = current_text[:last_word_index] + \
-                        " " + selected_word + " "
+                    updated_text = current_text[:last_word_index] + selected_word + " "
                 else:
-                    updated_text = current_text[:last_word_index] + \
-                        selected_word + " "
+                    updated_text = current_text[:last_word_index] + selected_word + " "
                 self.text_area.delete("1.0", tk.END)
                 self.text_area.insert(tk.END, updated_text)
 
